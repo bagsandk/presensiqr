@@ -20,11 +20,11 @@ const Login = ({ navigation }) => {
     const _postlogin = async (usr, pass) => {
         var formData = new FormData();
         u = await DeviceInfo.getUniqueId()
-        formData.append("empId", usr);
-        formData.append("keyId", pass);
-        formData.append("unikId", u + usr);
+        formData.append("empCode", usr);
+        formData.append("keyCode", pass);
+        formData.append("unikCode", u + usr);
         console.log(usr, pass)
-        var link = apiUrl + '/log';
+        var link = apiUrl + '/login';
         if (usr && pass !== '' || null) {
             setding(true)
             try {
@@ -32,17 +32,15 @@ const Login = ({ navigation }) => {
                     method: 'POST',
                     body: formData,
                 }).then(response => response.json()).then(response => {
-                    console.log(response.status);
-                    if (response.status === true) {
+                    console.log(response);
+                    if (response.token != null) {
+                        const token = response.token;
                         setding(false)
-                        signIn(usr, pass, u)
+                        signIn(usr, pass, u, token)
                         AlertHelper.show('success', 'Berhasil Login', 'Selamat Datang ' + usr)
-                    } else if (response.message == 'Device change') {
-                        setding(false)
-                        AlertHelper.show('error', 'Gagal', response.message)
                     } else {
                         setding(false)
-                        AlertHelper.show('error', 'Gagal', response.message)
+                        AlertHelper.show('error', 'Gagal', response.pesan)
                     }
                 })
             } catch (error) {

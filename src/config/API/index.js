@@ -1,3 +1,3 @@
-const apiUrl = "http://52.168.171.84/diki_presensi/index.php/api/"
+const apiUrl = 'https://presensi.lampung-travel.com/api';
 
-export default apiUrl
+export default apiUrl;

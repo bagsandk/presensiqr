@@ -10,13 +10,15 @@ import { CardStyleInterpolators } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 const Router = () => {
     async function setStr() {
-        var value = await AsyncStorage.getItem('tokenLogin');
+        var value = await AsyncStorage.getItem('accesstoken');
         setStorage(value);
+        console.log(value);
         return value;
     }
-    async function ambilStr(u, usr, pass) {
-        var token = usr + '$$' + u
-        await AsyncStorage.setItem('tokenLogin', token);
+    async function ambilStr(u, usr, pass, token) {
+        var uid = usr + '$$' + u
+        await AsyncStorage.setItem('accesstoken', token);
+        await AsyncStorage.setItem('tokenLogin', uid);
         await AsyncStorage.setItem('pwd', pass);
     }
     const [isloading, setloading] = React.useState(true)
@@ -24,16 +26,18 @@ const Router = () => {
     const [storage, setStorage] = React.useState(null)
     const authContext = React.useMemo(() => {
         return {
-            signIn: async (usr, pass, u) => {
+            signIn: async (usr, pass, u, token) => {
                 setloading(false);
                 setUsername(usr);
                 console.log(usr);
-                console.log(pass);
-                ambilStr(u, usr, pass)
+                console.log(token);
+                ambilStr(u, usr, pass, token)
                 setStr()
             },
             signOut: async () => {
                 await AsyncStorage.setItem('tokenLogin', '');
+                await AsyncStorage.setItem('accesstoken', '');
+                await AsyncStorage.setItem('pass', '');
                 setloading(false);
                 setUsername(null);
                 setStr();

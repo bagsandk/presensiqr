@@ -11,23 +11,24 @@ const _cekakun = async () => {
     const pass = await AsyncStorage.getItem('pwd')
     const formData = new FormData
     let emp = id.substring(0, id.lastIndexOf('$$'))
-    formData.append("empId", emp);
-    formData.append("keyId", pass);
+    formData.append("empCode", emp);
+    formData.append("keyCode", pass);
     let u = await DeviceInfo.getUniqueId()
-    formData.append("unikId", u + emp);
-    console.log(pass)
-    var link = apiUrl + 'log';
+    formData.append("unikCode", u + emp);
+    var link = apiUrl + '/login';
+    let accesstoken = await AsyncStorage.getItem('accesstoken');
+    console.log('aa' + accesstoken)
     try {
         await fetch(link, {
             method: 'POST',
             body: formData,
         }).then(response => response.json()).then(response => {
-            console.log(response.status);
-            if (response.status === true) {
+            if (response.token == accesstoken) {
                 AlertHelper.show('success', 'Hay', 'Selama Datang ' + emp)
             } else {
                 signOut()
-                AlertHelper.show('error', 'Gagal', response.error)
+                console.log('tttttttt')
+                AlertHelper.show('error', 'Gagal', 'Access token berubah!')
             }
         })
     } catch{

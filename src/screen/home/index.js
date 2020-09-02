@@ -1,9 +1,30 @@
 import React from 'react';
 import { Image, StatusBar, Text, TouchableOpacity, View, StyleSheet, } from 'react-native';
 import _cekakun from '../../fungsi/cekakun';
+import apiUrl from '../../config/API';
+import { AlertHelper } from '../../component/flash';
+import _postdata from '../../fungsi/scan';
 
 const Home = ({ navigation }) => {
     _cekakun()
+    const [nama, setnama] = React.useState('Hadir');
+    async function ceklokasi() {
+        const link = apiUrl + '/cekgps';
+        await fetch(link, {
+            method: 'POST',
+        }).then(response => response.json()).then(response => {
+            if (response.statusGPS == "Tidak Aktif") {
+                AlertHelper.show('success', 'WFO', 'Kamu sedang mengakses presensi WFO')
+                setnama('Hadir');
+                navigation.navigate('Scan');
+            } else {
+                AlertHelper.show('success', 'WFH', 'Kamu sedang mengakses presensi WFH')
+                setnama('Isi Absen');
+                _postdata(navigation, 'WFH')
+                // _postdata
+            }
+        });
+    }
     return (
         <View style={styles.wrap}>
             <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
@@ -12,16 +33,16 @@ const Home = ({ navigation }) => {
             </View>
             <View style={styles.body}>
                 {/* tombol  */}
-                <TouchableOpacity onPress={() => navigation.navigate('Scan')}>
+                <TouchableOpacity onPress={() => ceklokasi()}>
                     <View style={styles.tombol}>
-                        <Text style={styles.text}>Hadir</Text>
+                        <Text style={styles.text}>{nama}</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Crm')}>
+                {/* <TouchableOpacity onPress={() => navigation.navigate('Crm')}>
                     < View style={styles.tombol}>
                         <Text style={styles.text}>Crm</Text>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         </View >
     )
