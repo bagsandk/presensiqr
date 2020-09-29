@@ -24,15 +24,15 @@ const _cekakun = async () => {
             body: formData,
         }).then(response => response.json()).then(response => {
             if (response.token == accesstoken) {
-                AlertHelper.show('success', 'Hay', 'Selama Datang ' + emp)
+                return true
             } else {
                 signOut()
-                console.log('tttttttt')
                 AlertHelper.show('error', 'Gagal', 'Access token berubah!')
             }
         })
-    } catch{
-        console.log('error')
+    } catch {
+        signOut()
+        AlertHelper.show('error', 'Gagal', 'Access token berubah!')
     }
 }
 export default _cekakun

@@ -48,9 +48,14 @@ const _postdata = async (navigation, barcode) => {
   console.log(mesin, ip, lati, longti, barcode.data, time2);
   try {
     console.log('tim' + time2);
-    if (bar != barcode.data || barcode == 'WFH') {
-      if (barcode != 'WFH') {
+    if (bar != barcode.data || barcode.data == 'WFH') {
+      if (barcode.data != 'WFH') {
         formData.append('qr', barcode.data);
+        formData.append('type', 'WFO');
+        console.log(barcode.data + 'lll')
+      } else {
+        console.log('nnnnnnnn')
+        formData.append('type', 'WFH');
       }
       formData.append('ipAddress', ip);
       formData.append('token', token); //Pos token
@@ -68,49 +73,25 @@ const _postdata = async (navigation, barcode) => {
           console.log(response.pesan + 'pesan');
           bar = barcode.data;
           if (response.pesan == "Absen Berhasil") {
+            rekamjam = time2
+            Vibration.vibrate(500)
             return (
-              (Vibration.vibrate(500),
-                (rekamjam = time2),
-                navigation.navigate('Home')),
+              navigation.navigate('Home'),
               setTimeout(() => {
                 AlertHelper.show('success', 'Selamat', 'Anda Berhasil Absen, Pada Jam : ' + rekamjam,
                 );
               }, 1000)
             );
           }
-          //   else if (response.message == undefined) {
-          //     return (
-          //       navigation.navigate('Home'),
-          //       setTimeout(() => {
-          //         AlertHelper.show('error', 'Gagal akses', response.error);
-          //       }, 1000),
-          //       setTimeout(() => {
-          //         bar = '';
-          //       }, 10000)
-          //     );}
           else {
             return (
               navigation.navigate('Home'),
               setTimeout(() => {
                 AlertHelper.show('error', 'Gagal', response.pesan);
-              }, 1000),
-              setTimeout(() => {
                 bar = '';
-              }, 10000)
+              }, 1000)
             );
           }
-          //   else {
-          //     return (
-          //       navigation.navigate('Home'),
-          //       setTimeout(() => {
-          //         AlertHelper.show(
-          //           'success',
-          //           'Nice',
-          //           'Anda Sudah Absen Pada Jam : ' + rekamjam,
-          //         );
-          //       }, 1000)
-          //     );
-          //   }
         });
     } else {
       return (

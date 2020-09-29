@@ -44,9 +44,7 @@ const Login = ({ navigation }) => {
                     }
                 })
             } catch (error) {
-                // console.log(error)
                 setding(false)
-                // AlertHelper.show('error', 'Gagal', error);
             }
         } else {
             if (usr == '' || usr == null) {

@@ -1,3 +1,3 @@
-const apiUrl = 'https://presensi.lampung-travel.com/api';
+const apiUrl = 'https://presensi.bagas.my.id/api';
 
 export default apiUrl;

@@ -4,30 +4,50 @@ import _cekakun from '../../fungsi/cekakun';
 import apiUrl from '../../config/API';
 import { AlertHelper } from '../../component/flash';
 import _postdata from '../../fungsi/scan';
+import AsyncStorage from '@react-native-community/async-storage';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 const Home = ({ navigation }) => {
     _cekakun()
     const [nama, setnama] = React.useState('Hadir');
+    const [load, setload] = React.useState(null);
     async function ceklokasi() {
+        let accesstoken = await AsyncStorage.getItem('accesstoken');
+        var formData = new FormData();
+        formData.append("token", accesstoken);
         const link = apiUrl + '/cekgps';
-        await fetch(link, {
+        setload(true)
+        let response = await fetch(link, {
             method: 'POST',
-        }).then(response => response.json()).then(response => {
-            if (response.statusGPS == "Tidak Aktif") {
-                AlertHelper.show('success', 'WFO', 'Kamu sedang mengakses presensi WFO')
-                setnama('Hadir');
-                navigation.navigate('Scan');
+            body: formData,
+        })
+        console.log(response.status);
+        let data = await response.json();
+        if (response.status == 200) {
+            console.log(data.Type);
+            if (data.Type == 'WFO') {
+                AlertHelper.show('info', 'WFO'
+                );
+                navigation.navigate('Scan')
+                setload(false)
             } else {
-                AlertHelper.show('success', 'WFH', 'Kamu sedang mengakses presensi WFH')
-                setnama('Isi Absen');
-                _postdata(navigation, 'WFH')
-                // _postdata
+                AlertHelper.show('info', 'WFH'
+                );
+                await _postdata(navigation, { data: 'WFH' });
+                setload(false)
             }
-        });
+        } else {
+            console.log(data)
+            AlertHelper.show('info', 'Presensi', data.pesan,
+            );
+            setload(false)
+        }
     }
     return (
         <View style={styles.wrap}>
             <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+            <Spinner visible={load} textContent={'Melakukan Presensi'} textStyle={styles.spinnerTextStyle} animation="fade" />
             <View style={styles.header}>
                 <Image source={require('../../assets/img/runsyn.png')} style={styles.img} />
             </View>
