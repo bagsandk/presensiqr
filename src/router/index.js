@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { AuthContext } from '../fungsi/context';
 import { TransitionPresets } from '@react-navigation/stack';
 import { CardStyleInterpolators } from '@react-navigation/stack';
+import GetLocation from 'react-native-get-location';
+import { Alert, BackHandler } from 'react-native';
 
 const Stack = createStackNavigator();
 const Router = () => {
@@ -47,6 +49,28 @@ const Router = () => {
     )
 
     React.useEffect(() => {
+
+        GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 15000,
+        })
+            .then((location) => {
+                console.log(location.latitude)
+            })
+            .catch((error) => {
+                const { code, message } = error;
+                if (code == 'UNAVAILABLE') {
+                    Alert.alert("Warning", "Lokasi Tidak Aktif", [
+                        { text: "OK", onPress: () => BackHandler.exitApp() }
+                    ]);
+                    return true
+                } else if (code == 'UNAUTHORIZED') {
+                    Alert.alert('Aplikasi Belum Mendapatkan Izin Akses Lokasi');
+                } else {
+                    console.log('else', code, message);
+                }
+                console.warn(code, message);
+            });
         setStr()
         setTimeout(() => {
             setloading(false);

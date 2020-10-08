@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { Vibration, Alert } from 'react-native';
+import { Vibration, Alert, BackHandler } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import publicIP from 'react-native-public-ip';
@@ -20,7 +20,10 @@ GetLocation.getCurrentPosition({
   .catch((error) => {
     const { code, message } = error;
     if (code == 'UNAVAILABLE') {
-      Alert.alert('Lokasi Tidak Aktif');
+      Alert.alert("Warning", "Lokasi Tidak Aktif", [
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true
     } else if (code == 'UNAUTHORIZED') {
       Alert.alert('Aplikasi Belum Mendapatkan Izin Akses Lokasi');
     } else {
@@ -78,7 +81,7 @@ const _postdata = async (navigation, barcode) => {
             return (
               navigation.navigate('Home'),
               setTimeout(() => {
-                AlertHelper.show('success', 'Selamat', 'Anda Berhasil Absen, Pada Jam : ' + rekamjam,
+                AlertHelper.show('success', 'Selamat', 'Anda Berhasil Presensi, Pada Jam : ' + rekamjam,
                 );
               }, 1000)
             );
@@ -100,7 +103,7 @@ const _postdata = async (navigation, barcode) => {
           AlertHelper.show(
             'success',
             'Good!',
-            'Anda Sudah Absen Pada Jam : ' + rekamjam,
+            'Anda Sudah Presensi Pada Jam : ' + rekamjam,
           );
         }, 1000)
       );
